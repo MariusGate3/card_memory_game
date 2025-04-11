@@ -1,7 +1,9 @@
 import pygame
 import os
 
+pygame.mixer.init()
 game_dir = os.path.dirname(__file__)
+card_flip_sound = pygame.mixer.Sound("assets/sounds/card_flip2.mp3")
 
 
 class Card:
@@ -9,15 +11,19 @@ class Card:
         self.suit = suit
         self.rank = rank
         self.front = pygame.image.load(
-            os.path.join(game_dir, "assets", f"{suit}_{rank}.png")
+            os.path.join(game_dir, "assets", "images", f"{suit}_{rank}.png")
         )
-        self.back = pygame.image.load(os.path.join(game_dir, "assets", "back_dark.png"))
+        self.back = pygame.image.load(
+            os.path.join(game_dir, "assets", "images", "back_light.png")
+        )
 
         self.back = self.adjust_size(self.back, 2.5)
         self.front = self.adjust_size(self.front, 2.5)
         self.image = self.back
         self.rect = self.image.get_rect()
         self.pair = None
+        self.x = None
+        self.y = None
 
     def adjust_size(self, surface, sizing_factor: int):
 
@@ -30,6 +36,8 @@ class Card:
         )
 
     def flip(self):
+
+        card_flip_sound.play()
         if self.image == self.back:
             self.image = self.front
         else:
@@ -41,6 +49,5 @@ class Card:
     def set_pair(self, pair):
         self.pair = pair
 
-    def display(self, x: int, y: int, screen):
-        self.rect.topleft = (x, y)
+    def display(self, screen):
         screen.blit(self.image, self.rect)

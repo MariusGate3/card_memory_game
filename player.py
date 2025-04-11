@@ -15,3 +15,8 @@ class Player:
 
         text_score = font.render(f"Score: {self.score}", True, (255, 255, 255))
         screen.blit(text_score, (pos[0], pos[1] + 30))
+
+        round_score = font.render(
+            f"Round wins: {self.round_wins}", True, (255, 255, 255)
+        )
+        screen.blit(round_score, (pos[0], pos[1] + 60))

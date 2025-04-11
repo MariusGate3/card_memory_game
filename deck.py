@@ -23,19 +23,24 @@ class Deck:
             "A",
         ]
         self.gap = 30
+        self.margin_top = 400
+        self.margin_side = 400
         self.init_new_deck()
         self.cards_width = self.cards[0].rect.width
         self.cards_height = self.cards[0].rect.height
-        self.cards_per_row = (config.window_x - self.gap) // (
+        self.cards_per_row = (config.window_x - 2 * self.margin_side + self.gap) // (
             self.cards_width + self.gap
         )
-        self.cards_per_col = (config.window_y - self.gap) // (
+        self.cards_per_col = (config.window_y - self.margin_top + self.gap) // (
             self.cards_height + self.gap
         )
 
-        self.displayed_cards_count = self.cards_per_row * self.cards_per_col
+        self.displayed_cards_count = (
+            (self.cards_per_row * self.cards_per_col) // 2
+        ) * 2
 
         self.init_card_doubles()
+        self.set_card_positions()
 
     def shuffle(self):
         random.shuffle(self.cards)
@@ -59,35 +64,38 @@ class Deck:
         self.cards = card_doubles
         self.shuffle()
 
-    def display_cards(self, screen):
+    def set_card_positions(self):
         row = 0
-        space_top = 0
+        col = 0
 
         start_x = (
             config.window_x
             - (self.cards_per_row * (self.cards_width + self.gap) - self.gap)
         ) // 2
 
-        start_y = config.window_y - (
+        total_grid_height = (
             self.cards_per_col * (self.cards_height + self.gap) - self.gap
         )
-        height = space_top + start_y
+        start_y = (config.window_y - total_grid_height) // 2
 
-        for i in range(len(self.cards)):
-            if (
-                start_x + row * (self.cards_width + self.gap)
-                > config.window_x - self.cards_width
-            ):
-                height += self.cards_height + self.gap
-                row = 0
+        for i, card in enumerate(self.cards):
+            x = start_x + col * (self.cards_width + self.gap)
+            y = start_y + row * (self.cards_height + self.gap)
+            self.cards[i].x = x
+            self.cards[i].y = y
+            self.cards[i].rect.topleft = (self.cards[i].x, self.cards[i].y)
 
-            if height + self.cards_height > config.window_y - self.cards_height:
-                break
+            col += 1
 
-            self.cards[i].display(
-                start_x + (row * (self.cards_width + self.gap)),
-                height + self.gap,
-                screen,
-            )
-            i += 1
-            row += 1
+            if col == self.cards_per_row:
+                col = 0
+                row += 1
+
+    def deal_new_set_of_cards(self):
+        self.init_new_deck()
+        self.init_card_doubles()
+        self.set_card_positions()
+
+    def display_cards(self, screen):
+        for card in self.cards:
+            card.display(screen)
