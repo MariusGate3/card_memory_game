@@ -79,16 +79,17 @@ if __name__ == "__main__":
                                 winner = 1
 
                             if winner == 2:
-                                print(
-                                    "The round was a draw! Dealing a new set of cards."
-                                )
+                                print("The round was a draw!")
                             else:
                                 print(
                                     f"{Players[winner].name} won this round! Their round win total is now: {Players[winner]}"
                                 )
                                 Players[winner].round_wins += 1
-                                print("Dealing a new set of cards!\n")
-                                deck.deal_new_set_of_cards()
+                            print("Dealing a new set of cards!\n")
+                            deck.deal_new_set_of_cards()
+
+                            for player in Players:
+                                player.score = 0
 
                         print(
                             f"Pair found, it is still {Players[current_player].name}'s turn."
